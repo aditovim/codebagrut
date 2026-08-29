@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Clock, FileText, Play, Send, Loader2, CheckCircle2, XCircle, AlertTriangle, ArrowLeft, Trophy, Timer } from 'lucide-react';
+import { Clock, FileText, Play, Send, Loader as Loader2, CircleCheck as CheckCircle2, Circle as XCircle, TriangleAlert as AlertTriangle, ArrowLeft, Trophy, Timer } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { reviewCode, RateLimitError } from '@/lib/ai';
