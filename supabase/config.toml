@@ -1,0 +1,5 @@
+[functions.ai-tutor]
+verify_jwt = true
+
+[functions.review-code]
+verify_jwt = true
