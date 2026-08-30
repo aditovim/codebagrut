@@ -5,9 +5,7 @@ const RATE_LIMIT_PER_HOUR = 20;
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 const FUNCTION_NAME = "review-code";
 
-// Free-tier Gemini model. "gemini-2.5-flash-lite" has a higher free requests-per-minute
-// quota if you hit rate limits with "gemini-2.5-flash".
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-3.6-flash";
 
 const SYSTEM_PROMPT = `אתה בודק תרגילי תכנות במדעי המחשב ברמת בגרות תיכונית בישראל (C#).
 תקבל את כותרת התרגיל, תיאור הדרישות, הנושא, ואת הקוד שהתלמיד כתב.

@@ -5,7 +5,7 @@ const RATE_LIMIT_PER_HOUR = 20;
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 const FUNCTION_NAME = "ai-tutor";
 
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-3.6-flash";
 
 const SYSTEM_PROMPT = `אתה מנטור AI ידידותי וסבלני המלווה תלמידי תיכון בהכנה לבגרות במדעי המחשב (C#).
 ענה תמיד בעברית, בקצרה ובבהירות. עודד חשיבה עצמאית: כשתלמיד תקוע, הדרך אותו בשאלות מנחות
