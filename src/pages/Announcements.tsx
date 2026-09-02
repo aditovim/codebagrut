@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Megaphone, CircleAlert as AlertCircle, Link as LinkIcon, Calendar } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import Layout from '@/components/Layout';
 import { formatSubmissionDate } from '@/lib/ai';
 import type { Announcement } from '@/types';
 
@@ -53,17 +52,14 @@ export default function Announcements() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-slate-400">טוען...</p>
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-slate-400">טוען...</p>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">עדכונים</h1>
@@ -152,6 +148,5 @@ export default function Announcements() {
           </div>
         )}
       </div>
-    </Layout>
   );
 }

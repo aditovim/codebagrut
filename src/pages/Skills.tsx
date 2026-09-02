@@ -1,4 +1,3 @@
-import Layout from '@/components/Layout';
 import ComplexityAnalyzer from '@/components/ComplexityAnalyzer';
 import DataStructuresVisualizer from '@/components/DataStructuresVisualizer';
 import RecursionVisualizer from '@/components/RecursionVisualizer';
@@ -6,8 +5,7 @@ import { BookOpen } from 'lucide-react';
 
 export default function Skills() {
   return (
-    <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <BookOpen className="text-blue-600" size={24} />
@@ -24,6 +22,5 @@ export default function Skills() {
           </div>
         </div>
       </div>
-    </Layout>
   );
 }

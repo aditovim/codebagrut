@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Code as Code2, GraduationCap, Brain, FileText, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import Layout from '@/components/Layout';
 
 export default function Home() {
   const { session, profile } = useAuth();
@@ -15,7 +14,7 @@ export default function Home() {
   ];
 
   return (
-    <Layout>
+    <>
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 text-white">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
@@ -83,6 +82,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </Layout>
+    </>
   );
 }

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Code as Code2, GraduationCap, FileText, TrendingUp, Award, Clock, BookOpen, MessageSquare } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import Layout from '@/components/Layout';
 import { formatSubmissionDate, getGradeColor } from '@/lib/ai';
 import type { Submission, Assignment, Exercise } from '@/types';
 
@@ -61,17 +60,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-slate-400">טוען...</p>
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-slate-400">טוען...</p>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-slate-900">
             שלום, {profile?.full_name ?? profile?.email}!
@@ -178,7 +174,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
-    </Layout>
+    </div>
   );
 }
