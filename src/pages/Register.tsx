@@ -93,10 +93,6 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Role selector and invite code intentionally removed from the public
-                registration page. Teacher accounts are created only via the
-                separate, unlisted /register-teacher page shared directly with staff. */}
-
             <button
               type="submit"
               disabled={loading}

@@ -15,8 +15,6 @@ export default function ProtectedRoute({ children, requireRole }: ProtectedRoute
   if (!session) return <Navigate to="/login" replace />;
 
   if (requireRole && profile?.role !== requireRole) {
-    // מפנה משתמש שאינו בעל התפקיד הנדרש ללוח הבקרה המתאים לו, במקום להראות לו
-    // בכלל שהעמוד קיים - כך שתלמיד סקרן שמנחש /teacher לא רואה את מסך המורה בכלל.
     return <Navigate to="/dashboard" replace />;
   }
 

@@ -1,150 +1,88 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Code as Code2, GraduationCap, Brain, CircleCheck as CheckCircle2, Gauge, GitBranch, Binary, Megaphone, Archive } from 'lucide-react';
-import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
-
-const FEATURES = [
-  {
-    icon: Code2,
-    title: 'תרגול אינטראקטיבי',
-    description: 'תרגל תרגילי תכנות אמיתיים מהבגרות עם עורך קוד מקצועי',
-  },
-  {
-    icon: Brain,
-    title: 'משוב AI מפורט',
-    description: 'קבל הערכה ומשוב חכם בעברית על הקוד שלך מיד לאחר ההגשה',
-  },
-  {
-    icon: Gauge,
-    title: 'בדיקת יעילות קוד',
-    description: 'ניתוח סיבוכיות זמן/מקום (O(n), O(n^2)) עם המלצות לייעול',
-  },
-  {
-    icon: GitBranch,
-    title: 'ויזואליזציה של רקורסיה',
-    description: 'עץ קריאות ויזואלי המציג את פתיחת הקריאות והחזרת הערכים',
-  },
-  {
-    icon: Binary,
-    title: 'מבני נתונים חיים',
-    description: 'ויזואליזציה דינמית של עצים בינאריים ורשימות מקושרות',
-  },
-  {
-    icon: Archive,
-    title: 'ארכיון בגרויות',
-    description: 'מאגר שאלות מסווג לפי שנה, מועד, שאלון ונושא עם תגיות',
-  },
-  {
-    icon: Megaphone,
-    title: 'הודעות ולוח זמנים',
-    description: 'ניהול הודעות, תזכורות, מועדי הגשה ושיעורים קרובים',
-  },
-  {
-    icon: GraduationCap,
-    title: 'מעקב התקדמות',
-    description: 'צפה בציונים, בהיסטוריה ובהתקדמות שלך לאורך זמן',
-  },
-];
-
-const STEPS = [
-  { num: '1', title: 'הירשם', description: 'צור חשבון תלמיד או מורה במהירות' },
-  { num: '2', title: 'תרגל', description: 'פתור תרגילי תכנות בנושאי לולאות, מערכים ומחלקות' },
-  { num: '3', title: 'קבל משוב', description: 'קבל ציון והערות מפורטות מה-AI' },
-  { num: '4', title: 'התקדם', description: 'עקוב אחר ההתקדמות ושפר את הביצועים' },
-];
+import { Code as Code2, GraduationCap, Brain, FileText, TrendingUp, ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import Layout from '@/components/Layout';
 
 export default function Home() {
+  const { session, profile } = useAuth();
+
+  const features = [
+    { icon: Code2, title: 'תרגול אינטראקטיבי', desc: 'תרגלו תרגילי C# בעורך קוד מקצועי עם בדיקה אוטומטית' },
+    { icon: Brain, title: 'מנטור AI', desc: 'קבלו עזרה והכוונה ממנטור AI חכם במהלך התרגול' },
+    { icon: GraduationCap, title: 'סימולציית בגרות', desc: 'תרגלו בתנאי מבחן אמיתיים עם ניהול זמן וציון' },
+    { icon: FileText, title: 'ארכיון בגרויות', desc: 'גישה לשאלות בגרות אמיתיות משנים קודמות' },
+    { icon: TrendingUp, title: 'מעקב התקדמות', desc: 'עקבו אחר ההתקדמות שלכם, הציונים והתחומים לשיפור' },
+  ];
+
   return (
-    <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/30 to-white">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] opacity-50" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-6">
-            <GraduationCap size={16} />
-            <span>בגרות 5 יחידות • מדעי המחשב</span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight max-w-3xl mx-auto">
-            {APP_NAME}
-            <span className="block text-2xl sm:text-3xl lg:text-4xl mt-3 text-blue-600">{APP_DESCRIPTION}</span>
-          </h1>
-          <p className="mt-6 text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            פלטפורמת תרגול חכמה לתלמידי מדעי המחשב. תרגל תרגילי בגרות אמיתיים, קבל משוב מיידי מ-AI, ועקוב אחר ההתקדמות שלך.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30"
-            >
-              <span>התחל לתרגל עכשיו</span>
-              <ArrowLeft size={20} />
-            </Link>
-            <Link
-              to="/practice"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-slate-700 font-semibold border border-slate-200 hover:border-blue-300 hover:text-blue-600 transition-all"
-            >
-              <span>צפה בתרגילים</span>
-            </Link>
+    <Layout>
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 text-white">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div className="text-center">
+            <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+              קוד<span className="text-blue-400">Bagrut</span>
+            </h1>
+            <p className="text-lg lg:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
+              הפלטפורמה המקיפה להכנה לבגרות במדעי המחשב - C#
+              <br />
+              תרגול, מנטור AI, סימולציות מבחנים ועוד
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              {session ? (
+                <Link
+                  to={profile?.role === 'teacher' ? '/teacher' : '/dashboard'}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-colors"
+                >
+                  <span>כניסה ללוח הבקרה</span>
+                  <ArrowLeft size={18} />
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-colors"
+                  >
+                    <span>התחילו לתרגל עכשיו</span>
+                    <ArrowLeft size={18} />
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 backdrop-blur text-white font-semibold hover:bg-white/20 transition-colors border border-white/20"
+                  >
+                    יש לי חשבון
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 bg-white">
+      <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-slate-900 mb-4">למה {APP_NAME}?</h2>
-          <p className="text-center text-slate-600 mb-12 max-w-2xl mx-auto">כל מה שצריך כדי להתכונן לבגרות במדעי המחשב במקום אחד</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURES.map((feature) => (
-              <div
-                key={feature.title}
-                className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform">
-                  <feature.icon size={24} />
+          <h2 className="text-3xl font-bold text-center text-slate-900 mb-12">
+            מה מציעה הפלטפורמה?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={feature.title}
+                  className="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:border-blue-200 transition-all"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 mb-4">
+                    <Icon className="text-blue-600" size={24} />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
+                  <p className="text-sm text-slate-600">{feature.desc}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
-
-      {/* How it works */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-slate-900 mb-12">איך זה עובד?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {STEPS.map((step) => (
-              <div key={step.num} className="relative text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white border-2 border-blue-200 text-blue-600 text-2xl font-bold mb-4 shadow-sm">
-                  {step.num}
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">{step.title}</h3>
-                <p className="text-sm text-slate-600">{step.description}</p>
-                {step.num !== '4' && (
-                  <div className="hidden md:block absolute top-8 -left-4 w-8 h-0.5 bg-slate-200" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">מוכנים להתחיל?</h2>
-          <p className="text-blue-50 mb-8 text-lg">הצטרפו עכשיו והתחילו לתרגל לבגרות במדעי המחשב</p>
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-blue-600 font-semibold hover:bg-blue-50 transition-all shadow-lg"
-          >
-            <span>יצירת חשבון</span>
-            <ArrowLeft size={20} />
-          </Link>
-        </div>
-      </section>
-    </div>
+    </Layout>
   );
 }

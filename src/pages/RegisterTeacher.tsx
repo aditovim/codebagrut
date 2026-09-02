@@ -1,14 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, CircleAlert as AlertCircle, ArrowLeft, KeyRound } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase';
 import Logo from '@/components/Logo';
 
-// עמוד זה אינו מקושר משום מקום בממשק הציבורי (לא בתפריט, לא בעמוד /register).
-// הוא נגיש רק למי שמקבל את הכתובת /register-teacher ישירות ממנהל המערכת,
-// ועדיין דורש קוד הזמנה תקף שנבדק בצד השרת - שכבת הגנה כפולה.
 export default function RegisterTeacher() {
-  const { signUpTeacher } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,30 +20,72 @@ export default function RegisterTeacher() {
       setError('הסיסמה חייבת להכיל לפחות 6 תווים');
       return;
     }
-    if (!inviteCode.trim()) {
-      setError('נדרש קוד הזמנה כדי להירשם כמורה');
+    setLoading(true);
+
+    const { data: inviteData, error: inviteError } = await supabase
+      .from('teacher_invite_codes')
+      .select('code, used_by')
+      .eq('code', inviteCode)
+      .maybeSingle();
+
+    if (inviteError || !inviteData) {
+      setError('קוד הזמנה לא תקין');
+      setLoading(false);
       return;
     }
-    setLoading(true);
-    const result = await signUpTeacher(email, password, fullName, inviteCode.trim());
-    setLoading(false);
-    if (result.error) {
-      setError(result.error);
-    } else {
-      navigate('/teacher');
+
+    if (inviteData.used_by) {
+      setError('קוד הזמנה זה כבר נוצל');
+      setLoading(false);
+      return;
     }
+
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    });
+
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (authData.user) {
+      const { error: profileError } = await supabase.from('profiles').insert({
+        id: authData.user.id,
+        email,
+        full_name: fullName,
+        role: 'teacher',
+      });
+
+      if (profileError) {
+        setError(profileError.message);
+        setLoading(false);
+        return;
+      }
+
+      await supabase
+        .from('teacher_invite_codes')
+        .update({ used_by: authData.user.id, used_at: new Date().toISOString() })
+        .eq('code', inviteCode);
+    }
+
+    setLoading(false);
+    navigate('/teacher');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-block"><Logo size="md" /></Link>
-          <h1 className="mt-6 text-2xl font-bold text-slate-900">הרשמת מורה</h1>
-          <p className="mt-2 text-sm text-slate-600">עמוד זה מיועד לצוות הוראה בלבד</p>
+          <h1 className="mt-6 text-2xl font-bold text-white">רישום מורה</h1>
+          <p className="mt-2 text-sm text-slate-400">דף זה מיועד למורים בלבד</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
           {error && (
             <div className="mb-4 flex items-center gap-2 p-3 rounded-lg bg-red-50 text-red-700 text-sm">
               <AlertCircle size={18} />
@@ -66,7 +104,7 @@ export default function RegisterTeacher() {
                   onChange={(e) => setFullName(e.target.value)}
                   required
                   className="w-full pr-10 pl-4 py-2.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-slate-900"
-                  placeholder="ישראל ישראלי"
+                  placeholder="שם המורה"
                 />
               </div>
             </div>
@@ -102,7 +140,7 @@ export default function RegisterTeacher() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">קוד הזמנה למורה</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">קוד הזמנה</label>
               <div className="relative">
                 <KeyRound className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <input
@@ -110,11 +148,10 @@ export default function RegisterTeacher() {
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value)}
                   required
-                  className="w-full pr-10 pl-4 py-2.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-slate-900"
+                  className="w-full pr-10 pl-4 py-2.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-slate-900 font-mono"
                   placeholder="הזן קוד הזמנה"
                 />
               </div>
-              <p className="mt-1.5 text-xs text-slate-400">נדרש קוד הזמנה תקף. פנה למנהל המערכת לקבלת קוד.</p>
             </div>
 
             <button
@@ -125,17 +162,10 @@ export default function RegisterTeacher() {
               {loading ? 'יוצר חשבון...' : 'צור חשבון מורה'}
             </button>
           </form>
-
-          <div className="mt-6 text-center text-sm text-slate-600">
-            כבר יש לך חשבון?{' '}
-            <Link to="/login" className="text-blue-600 font-medium hover:underline">
-              התחבר
-            </Link>
-          </div>
         </div>
 
         <div className="mt-6 text-center">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700">
+          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200">
             <ArrowLeft size={16} />
             <span>חזרה לדף הבית</span>
           </Link>

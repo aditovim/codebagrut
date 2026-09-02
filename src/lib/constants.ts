@@ -1,22 +1,21 @@
-export const APP_NAME = 'CodeBagrut';
-export const APP_DESCRIPTION = 'הכנה לבגרות 5 יחידות במדעי המחשב';
-
-export const NAV_LINKS = [
-  { label: 'דף הבית', path: '/' },
-  { label: 'תרגול', path: '/practice' },
-  { label: 'מבחן מדמה', path: '/exam' },
-  { label: 'מיומנויות', path: '/skills' },
-  { label: 'ארכיון בגרויות', path: '/archive' },
-  { label: 'הודעות', path: '/announcements' },
-  { label: 'לוח בקרה', path: '/dashboard' },
-  // הוסר: 'מורה' — לא אמור להופיע בתפריט לכולם. מוצג ב-Navbar.tsx רק
-  // כשprofile?.role === 'teacher', עבור משתמש מחובר שהוא באמת מורה.
+export const TOPICS = [
+  'Basics',
+  'Variables',
+  'Conditionals',
+  'Loops',
+  'Arrays',
+  'Strings',
+  'Methods',
+  'Recursion',
+  'OOP',
 ];
 
+export const DIFFICULTIES = ['beginner', 'intermediate', 'advanced'] as const;
+
 export const DIFFICULTY_LABELS: Record<string, string> = {
-  beginner: 'מתחיל',
+  beginner: 'קל',
   intermediate: 'בינוני',
-  advanced: 'מתקדם',
+  advanced: 'קשה',
 };
 
 export const DIFFICULTY_COLORS: Record<string, string> = {

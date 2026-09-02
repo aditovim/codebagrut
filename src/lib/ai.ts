@@ -1,15 +1,5 @@
 import { supabase } from '@/lib/supabase';
 
-/**
- * Calls to review-code and ai-tutor Edge Functions.
- *
- * IMPORTANT FIX: the previous version sent VITE_SUPABASE_ANON_KEY as the
- * Authorization header. The Edge Functions use that header to identify
- * *which user* is calling (via supabase.auth.getUser()) for auth checks and
- * per-user rate limiting - the anon key does not represent a signed-in user,
- * so every call would likely have failed with 401 Unauthorized in practice.
- * We now fetch the current user's real session access token instead.
- */
 async function getAuthHeader(): Promise<string> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -112,4 +102,30 @@ export function getGradeColor(grade: number): string {
   if (grade >= 70) return 'text-yellow-600';
   if (grade >= 60) return 'text-orange-600';
   return 'text-red-600';
+}
+
+export function difficultyLabel(difficulty: string): string {
+  switch (difficulty) {
+    case 'beginner':
+      return 'קל';
+    case 'intermediate':
+      return 'בינוני';
+    case 'advanced':
+      return 'קשה';
+    default:
+      return difficulty;
+  }
+}
+
+export function difficultyColor(difficulty: string): string {
+  switch (difficulty) {
+    case 'beginner':
+      return 'bg-green-100 text-green-700 border-green-200';
+    case 'intermediate':
+      return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    case 'advanced':
+      return 'bg-red-100 text-red-700 border-red-200';
+    default:
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+  }
 }

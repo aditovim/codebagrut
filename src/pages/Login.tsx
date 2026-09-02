@@ -16,22 +16,22 @@ export default function Login() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const result = await signIn(email, password);
     setLoading(false);
-    if (error) {
-      setError(error);
+    if (result.error) {
+      setError(result.error);
     } else {
       navigate('/dashboard');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-block"><Logo size="md" /></Link>
           <h1 className="mt-6 text-2xl font-bold text-slate-900">התחברות</h1>
-          <p className="mt-2 text-sm text-slate-600">ברוכים שוב! התחברו כדי להמשיך לתרגל</p>
+          <p className="mt-2 text-sm text-slate-600">התחברו לחשבון שלכם</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
@@ -85,7 +85,7 @@ export default function Login() {
           <div className="mt-6 text-center text-sm text-slate-600">
             אין לך חשבון?{' '}
             <Link to="/register" className="text-blue-600 font-medium hover:underline">
-              הירשם עכשיו
+              הרשמה
             </Link>
           </div>
         </div>

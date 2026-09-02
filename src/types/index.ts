@@ -1,15 +1,22 @@
-export type ExerciseDifficulty = 'beginner' | 'intermediate' | 'advanced';
+export interface Profile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: 'student' | 'teacher';
+  created_at: string;
+}
 
 export interface Exercise {
   id: string;
   title: string;
   topic: string;
-  difficulty: ExerciseDifficulty;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
   description: string;
   starter_code: string;
   solution_code: string;
   test_cases: string;
   points: number;
+  tags: string[] | null;
   created_at: string;
 }
 
@@ -24,17 +31,13 @@ export interface Submission {
   created_at: string;
 }
 
-export interface TutorMessage {
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: number;
-}
-
-export interface UserProfile {
+export interface Assignment {
   id: string;
-  email: string;
-  full_name: string | null;
-  role: 'student' | 'teacher';
+  teacher_id: string;
+  exercise_id: string;
+  assigned_to: string;
+  student_id: string | null;
+  due_date: string;
   created_at: string;
 }
 
@@ -42,12 +45,12 @@ export interface BagrutQuestion {
   id: string;
   title: string;
   year: number;
-  semester: 'a' | 'b';
+  semester: string;
   exam_code: string;
   topic: string;
   tags: string[];
-  difficulty: ExerciseDifficulty;
-  practice_type: 'class' | 'homework' | 'exam';
+  difficulty: string;
+  practice_type: string;
   points: number;
   description: string;
   starter_code: string;
@@ -60,7 +63,7 @@ export interface Announcement {
   author_id: string;
   title: string;
   content: string;
-  type: 'announcement' | 'reminder' | 'assignment' | 'exam';
+  type: string;
   link_url: string | null;
   due_date: string | null;
   created_at: string;
@@ -74,7 +77,7 @@ export interface ScheduleItem {
   item_date: string;
   start_time: string | null;
   end_time: string | null;
-  item_type: 'lesson' | 'exam' | 'deadline' | 'event';
+  item_type: string;
   link_url: string | null;
   created_at: string;
 }
@@ -85,7 +88,7 @@ export interface ExamSession {
   started_at: string;
   ends_at: string;
   duration_minutes: number;
-  status: 'in_progress' | 'submitted';
+  status: string;
   total_score: number | null;
   created_at: string;
 }
@@ -100,12 +103,10 @@ export interface ExamAnswer {
   created_at: string;
 }
 
-export interface Assignment {
-  id: string;
-  teacher_id: string;
-  exercise_id: string;
-  assigned_to: string;
-  student_id: string | null;
-  due_date: string;
-  created_at: string;
+export type UserProfile = Profile;
+
+export interface TutorMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
 }

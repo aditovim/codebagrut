@@ -1,176 +1,125 @@
 import { useEffect, useState } from 'react';
-import { Archive, Filter, Tag, BookOpen, Calendar, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { FileText, Filter, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/lib/constants';
+import Layout from '@/components/Layout';
+import { difficultyLabel, difficultyColor } from '@/lib/ai';
 import type { BagrutQuestion } from '@/types';
-
-const PRACTICE_TYPE_LABELS: Record<string, string> = {
-  class: 'תרגול כיתתי',
-  homework: 'שיעורי בית',
-  exam: 'מבחן',
-};
-
-const PRACTICE_TYPE_COLORS: Record<string, string> = {
-  class: 'bg-blue-50 text-blue-700 border-blue-200',
-  homework: 'bg-purple-50 text-purple-700 border-purple-200',
-  exam: 'bg-red-50 text-red-700 border-red-200',
-};
-
-const TOPICS = ['All', 'Loops', 'Arrays', 'OOP', 'Trees', 'Linked Lists', 'Strings', 'Recursion'];
-const EXAM_CODES = ['All', '271', '371'];
-const YEARS = ['All', '2023', '2022', '2021', '2020'];
 
 export default function BagrutArchive() {
   const [questions, setQuestions] = useState<BagrutQuestion[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterTopic, setFilterTopic] = useState('All');
-  const [filterYear, setFilterYear] = useState('All');
-  const [filterCode, setFilterCode] = useState('All');
+  const [filterYear, setFilterYear] = useState<string>('all');
+  const [filterTopic, setFilterTopic] = useState<string>('all');
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('bagrut_questions').select('*').order('year', { ascending: false });
-      setQuestions((data as BagrutQuestion[]) ?? []);
+      const { data } = await supabase
+        .from('bagrut_questions')
+        .select('*')
+        .order('year', { ascending: false });
+      setQuestions((data ?? []) as BagrutQuestion[]);
       setLoading(false);
     })();
   }, []);
 
+  const years = [...new Set(questions.map((q) => q.year))].sort((a, b) => b - a);
+  const topics = [...new Set(questions.map((q) => q.topic))].sort();
+
   const filtered = questions.filter((q) => {
-    if (filterTopic !== 'All' && q.topic !== filterTopic) return false;
-    if (filterYear !== 'All' && q.year !== parseInt(filterYear)) return false;
-    if (filterCode !== 'All' && q.exam_code !== filterCode) return false;
+    if (filterYear !== 'all' && q.year !== parseInt(filterYear)) return false;
+    if (filterTopic !== 'all' && q.topic !== filterTopic) return false;
     return true;
   });
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-      </div>
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <p className="text-slate-400">טוען...</p>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-          <Archive className="text-blue-600" size={32} />
-          ארכיון שאלות בגרות
-        </h1>
-        <p className="mt-2 text-slate-600">מאגר שאלות רשמי מסווג לפי שנה, מועד, שאלון ונושא</p>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-6">
-        <div className="flex items-center gap-2 mb-3 text-slate-700">
-          <Filter size={18} />
-          <span className="font-medium text-sm">סינון</span>
+    <Layout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">ארכיון שאלות בגרות</h1>
+          <p className="mt-1 text-sm text-slate-500">שאלות בגרות אמיתיות משנים קודמות</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">נושא</label>
-            <div className="flex flex-wrap gap-1.5">
-              {TOPICS.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setFilterTopic(t)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${filterTopic === t ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  {t === 'All' ? 'הכל' : t}
-                </button>
-              ))}
-            </div>
+
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <Filter size={16} />
+            <span>סינון:</span>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">שנה</label>
-            <div className="flex flex-wrap gap-1.5">
-              {YEARS.map((y) => (
-                <button
-                  key={y}
-                  onClick={() => setFilterYear(y)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${filterYear === y ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  {y === 'All' ? 'הכל' : y}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">שאלון</label>
-            <div className="flex flex-wrap gap-1.5">
-              {EXAM_CODES.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setFilterCode(c)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${filterCode === c ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                >
-                  {c === 'All' ? 'הכל' : c}
-                </button>
-              ))}
-            </div>
-          </div>
+          <select
+            value={filterYear}
+            onChange={(e) => setFilterYear(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 outline-none focus:border-blue-500"
+          >
+            <option value="all">כל השנים</option>
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+          <select
+            value={filterTopic}
+            onChange={(e) => setFilterTopic(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 outline-none focus:border-blue-500"
+          >
+            <option value="all">כל הנושאים</option>
+            {topics.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
         </div>
-      </div>
 
-      {/* Results count */}
-      <p className="text-sm text-slate-500 mb-4">{filtered.length} שאלות נמצאו</p>
-
-      {/* Questions grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((q) => (
-          <div key={q.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:border-blue-300 hover:shadow-md transition-all">
-            <div className="flex items-start justify-between gap-2 mb-3">
-              <h3 className="font-semibold text-slate-900 text-sm">{q.title}</h3>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${DIFFICULTY_COLORS[q.difficulty]}`}>
-                {DIFFICULTY_LABELS[q.difficulty]}
-              </span>
-            </div>
-            <p className="text-xs text-slate-600 mb-3 line-clamp-2">{q.description}</p>
-
-            {/* Meta info */}
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 text-xs text-slate-600">
-                <Calendar size={12} />
-                {q.year} {q.semester === 'a' ? "מועד א'" : "מועד ב'"}
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 text-xs text-slate-600">
-                <FileText size={12} />
-                {q.exam_code}
-              </span>
-              <span className="px-2 py-0.5 rounded bg-slate-50 text-xs text-slate-600">
-                {q.topic}
-              </span>
-            </div>
-
-            {/* Tags */}
-            {q.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-3">
-                {q.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600">
-                    <Tag size={10} />
-                    {tag}
+        {filtered.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+            <FileText className="mx-auto text-slate-300" size={48} />
+            <p className="mt-4 text-slate-500">אין שאלות בגרות במסנן הנוכחי</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filtered.map((q) => (
+              <div key={q.id} className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-900">{q.title}</h3>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {q.year} - סמסטר {q.semester} - קוד {q.exam_code}
+                    </p>
+                  </div>
+                  <span className={`px-2 py-1 rounded-md text-xs font-medium border ${difficultyColor(q.difficulty)}`}>
+                    {difficultyLabel(q.difficulty)}
                   </span>
-                ))}
+                </div>
+                <p className="text-sm text-slate-600 mb-3 line-clamp-2">{q.description}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap gap-1">
+                    {q.tags?.map((tag) => (
+                      <span key={tag} className="px-2 py-0.5 rounded bg-slate-100 text-xs text-slate-600">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-slate-500">{q.points} נקודות</span>
+                </div>
               </div>
-            )}
-
-            {/* Footer */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${PRACTICE_TYPE_COLORS[q.practice_type]}`}>
-                {PRACTICE_TYPE_LABELS[q.practice_type]}
-              </span>
-              <span className="text-sm font-medium text-blue-600">{q.points} נק'</span>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        )}
 
-      {filtered.length === 0 && (
-        <div className="text-center py-16">
-          <BookOpen className="mx-auto text-slate-300 mb-3" size={48} />
-          <p className="text-slate-400">לא נמצאו שאלות עם הסינון שנבחר</p>
+        <div className="mt-6">
+          <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700">
+            <ArrowLeft size={16} />
+            <span>חזרה ללוח בקרה</span>
+          </Link>
         </div>
-      )}
-    </div>
+      </div>
+    </Layout>
   );
 }

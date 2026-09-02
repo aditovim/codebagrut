@@ -2,38 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  direction: rtl;
+* {
+  font-family: 'Heebo', system-ui, sans-serif;
 }
 
 body {
-  font-family: 'Heebo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  min-height: 100vh;
 }
 
-/* Grid background pattern */
-.bg-grid-slate-100 {
-  background-image: linear-gradient(to right, rgb(241 245 249) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(241 245 249) 1px, transparent 1px);
-  background-size: 32px 32px;
+code {
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 }
 
-/* Monaco editor LTR override */
-.monaco-editor, .monaco-editor .overflow-guard {
-  direction: ltr;
-}
-
-/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f5f9;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }

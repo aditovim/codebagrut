@@ -1,17 +1,24 @@
 import { Code as Code2 } from 'lucide-react';
-import { APP_NAME } from '@/lib/constants';
 
-export default function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-  const iconSize = size === 'sm' ? 20 : size === 'lg' ? 36 : 28;
-  const textSize = size === 'sm' ? 'text-lg' : size === 'lg' ? 'text-3xl' : 'text-xl';
+interface LogoProps {
+  size?: 'sm' | 'md' | 'lg';
+}
+
+export default function Logo({ size = 'md' }: LogoProps) {
+  const sizes = {
+    sm: { icon: 20, text: 'text-lg' },
+    md: { icon: 28, text: 'text-xl' },
+    lg: { icon: 36, text: 'text-2xl' },
+  };
+  const s = sizes[size];
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/20" style={{ width: iconSize + 12, height: iconSize + 12 }}>
-        <Code2 size={iconSize} />
+      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-600 text-white">
+        <Code2 size={s.icon} />
       </div>
-      <span className={`font-bold ${textSize} text-slate-800`}>
-        {APP_NAME}
+      <span className={`${s.text} font-bold text-slate-900`}>
+        Code<span className="text-blue-600">Bagrut</span>
       </span>
     </div>
   );
