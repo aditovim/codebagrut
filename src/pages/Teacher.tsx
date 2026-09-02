@@ -1,9 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Users, Award, TrendingUp, BookOpen, CirclePlus as PlusCircle, ChartBar as BarChart3, ClipboardList, Loader as Loader2, ClipboardCheck, X, Calendar, Trash2, Search, Filter, CheckSquare, Square, Tag, Send } from 'lucide-react';
+import { Users, Award, TrendingUp, BookOpen, CirclePlus as PlusCircle, ChartBar as BarChart3, ClipboardList, Loader as Loader2, ClipboardCheck, X, Calendar, Trash2, Search, Filter, SquareCheck as CheckSquare, Square, Tag, Send } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/lib/constants';
 import { getGradeColor, formatSubmissionDate } from '@/lib/ai';
+import ExerciseCreationModal, { type CreationType } from '@/components/ExerciseCreationModal';
+import ExerciseCreationForm from '@/components/ExerciseCreationForm';
 import type { Exercise, Submission, UserProfile, Assignment } from '@/types';
 
 interface ClassStats {
@@ -23,7 +25,10 @@ export default function Teacher() {
   const [students, setStudents] = useState<UserProfile[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+
+  // Exercise creation flow state
+  const [showCreationModal, setShowCreationModal] = useState(false);
+  const [creationType, setCreationType] = useState<CreationType | null>(null);
 
   // Assignment modal state (single exercise)
   const [assignModal, setAssignModal] = useState<Exercise | null>(null);
@@ -32,17 +37,6 @@ export default function Teacher() {
   const [assignStudentId, setAssignStudentId] = useState('');
   const [assignSubmitting, setAssignSubmitting] = useState(false);
   const [assignMsg, setAssignMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  // Exercise form state
-  const [fTitle, setFTitle] = useState('');
-  const [fTopic, setFTopic] = useState('');
-  const [fDifficulty, setFDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
-  const [fDescription, setFDescription] = useState('');
-  const [fStarter, setFStarter] = useState('');
-  const [fSolution, setFSolution] = useState('');
-  const [fPoints, setFPoints] = useState(10);
-  const [formSubmitting, setFormSubmitting] = useState(false);
-  const [formMsg, setFormMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Exercise Library state
   const [searchQuery, setSearchQuery] = useState('');
@@ -108,38 +102,6 @@ export default function Teacher() {
 
   const selectAll = () => setSelectedIds(new Set(filteredExercises.map((e) => e.id)));
   const deselectAll = () => setSelectedIds(new Set());
-
-  const handleCreateExercise = async (e: FormEvent) => {
-    e.preventDefault();
-    setFormSubmitting(true);
-    setFormMsg(null);
-
-    const { data, error } = await supabase
-      .from('exercises')
-      .insert({
-        title: fTitle,
-        topic: fTopic,
-        difficulty: fDifficulty,
-        description: fDescription,
-        starter_code: fStarter,
-        solution_code: fSolution,
-        test_cases: '',
-        points: fPoints,
-      })
-      .select()
-      .single();
-
-    setFormSubmitting(false);
-
-    if (error) {
-      setFormMsg({ type: 'error', text: error.message });
-    } else {
-      setFormMsg({ type: 'success', text: 'התרגיל נוצר בהצלחה!' });
-      setExercises((prev) => [data as Exercise, ...prev]);
-      setFTitle(''); setFTopic(''); setFDescription(''); setFStarter(''); setFSolution(''); setFPoints(10);
-      setTimeout(() => setShowForm(false), 1500);
-    }
-  };
 
   const handleAssign = async (e: FormEvent) => {
     e.preventDefault();
@@ -262,11 +224,11 @@ export default function Teacher() {
         </div>
         {isTeacher && (
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => setShowCreationModal(true)}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors shadow-sm"
           >
             <PlusCircle size={20} />
-            <span>{showForm ? 'סגור טופס' : 'צור תרגיל חדש'}</span>
+            <span>צור תרגיל חדש</span>
           </button>
         )}
       </div>
@@ -302,58 +264,6 @@ export default function Teacher() {
               </div>
             ))}
           </div>
-
-          {/* Create exercise form */}
-          {showForm && isTeacher && (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">יצירת תרגיל חדש</h2>
-              {formMsg && (
-                <div className={`mb-4 p-3 rounded-lg text-sm ${formMsg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                  {formMsg.text}
-                </div>
-              )}
-              <form onSubmit={handleCreateExercise} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">כותרת</label>
-                  <input value={fTitle} onChange={(e) => setFTitle(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm" placeholder="לולאות - סכום ספרות" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">נושא</label>
-                  <input value={fTopic} onChange={(e) => setFTopic(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm" placeholder="Loops" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">רמת קושי</label>
-                  <select value={fDifficulty} onChange={(e) => setFDifficulty(e.target.value as 'beginner' | 'intermediate' | 'advanced')} className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm">
-                    <option value="beginner">{DIFFICULTY_LABELS.beginner}</option>
-                    <option value="intermediate">{DIFFICULTY_LABELS.intermediate}</option>
-                    <option value="advanced">{DIFFICULTY_LABELS.advanced}</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">נקודות</label>
-                  <input type="number" value={fPoints} onChange={(e) => setFPoints(Number(e.target.value))} min={1} max={100} className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">תיאור התרגיל</label>
-                  <textarea value={fDescription} onChange={(e) => setFDescription(e.target.value)} required rows={3} className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm" placeholder="כתוב תוכנית שמקבלת מספר ומדפיסה את סכום ספרותיו..." />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">קוד התחלתי</label>
-                  <textarea value={fStarter} onChange={(e) => setFStarter(e.target.value)} rows={5} dir="ltr" className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm font-mono" placeholder="// Starter code..." />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">קוד פתרון</label>
-                  <textarea value={fSolution} onChange={(e) => setFSolution(e.target.value)} rows={5} dir="ltr" className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm font-mono" placeholder="// Solution..." />
-                </div>
-                <div className="md:col-span-2">
-                  <button type="submit" disabled={formSubmitting} className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors disabled:opacity-60">
-                    {formSubmitting ? <Loader2 size={18} className="animate-spin" /> : <PlusCircle size={18} />}
-                    <span>{formSubmitting ? 'יוצר...' : 'צור תרגיל'}</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Exercises table with assign button */}
@@ -750,6 +660,26 @@ export default function Teacher() {
             </form>
           </div>
         </div>
+      )}
+      {/* Exercise creation modal */}
+      <ExerciseCreationModal
+        open={showCreationModal}
+        onClose={() => setShowCreationModal(false)}
+        onSelect={(type) => {
+          setCreationType(type);
+          setShowCreationModal(false);
+        }}
+      />
+
+      {/* Exercise creation form */}
+      {creationType && (
+        <ExerciseCreationForm
+          onBack={() => setCreationType(null)}
+          onCreated={(ex) => {
+            setExercises((prev) => [ex, ...prev]);
+            setCreationType(null);
+          }}
+        />
       )}
     </div>
   );
