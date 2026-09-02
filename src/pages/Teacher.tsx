@@ -18,7 +18,7 @@ interface ClassStats {
 type Tab = 'overview' | 'library';
 
 export default function Teacher() {
-  const { user, profile } = useAuth();
+  const { user, profile, effectiveRole } = useAuth();
   const [tab, setTab] = useState<Tab>('overview');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -211,7 +211,7 @@ export default function Teacher() {
     );
   }
 
-  const isTeacher = profile?.role === 'teacher';
+  const isTeacher = effectiveRole === 'teacher';
   const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
   const studentMap = new Map(students.map((s) => [s.id, s]));
 

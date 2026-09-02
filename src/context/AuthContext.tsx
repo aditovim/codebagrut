@@ -11,6 +11,9 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  devRoleOverride: 'student' | 'teacher' | null;
+  setDevRoleOverride: (role: 'student' | 'teacher' | null) => void;
+  effectiveRole: 'student' | 'teacher' | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,8 +22,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [devRoleOverride, setDevRoleOverride] = useState<'student' | 'teacher' | null>(null);
 
   const user = session?.user ?? null;
+
+  const effectiveRole = devRoleOverride ?? profile?.role ?? null;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -74,16 +80,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     if (data.user) {
-      const { error: profileError } = await supabase.from('profiles').insert({
+      // The database trigger on_auth_user_created should already have created
+      // a profile row. Use upsert as a safety net in case the trigger hasn't
+      // propagated yet or was added after the user was created.
+      await supabase.from('profiles').upsert({
         id: data.user.id,
         email,
         full_name: fullName,
         role: 'student',
-      });
-
-      if (profileError) {
-        return { error: profileError.message };
-      }
+      }, { onConflict: 'id' });
     }
 
     return { error: null };
@@ -108,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, user, profile, loading, signUp, signIn, signOut, devRoleOverride, setDevRoleOverride, effectiveRole }}>
       {children}
     </AuthContext.Provider>
   );

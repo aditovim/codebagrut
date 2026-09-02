@@ -6,7 +6,7 @@ import { formatSubmissionDate } from '@/lib/ai';
 import type { Announcement } from '@/types';
 
 export default function Announcements() {
-  const { profile } = useAuth();
+  const { profile, effectiveRole } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -65,7 +65,7 @@ export default function Announcements() {
             <h1 className="text-2xl font-bold text-slate-900">עדכונים</h1>
             <p className="mt-1 text-sm text-slate-500">הודעות ועדכונים חשובים</p>
           </div>
-          {profile?.role === 'teacher' && (
+          {effectiveRole === 'teacher' && (
             <button
               onClick={() => setShowForm(!showForm)}
               className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -118,7 +118,7 @@ export default function Announcements() {
                     <Megaphone className="text-blue-600" size={18} />
                     <h3 className="font-bold text-slate-900">{ann.title}</h3>
                   </div>
-                  {profile?.role === 'teacher' && (
+                  {effectiveRole === 'teacher' && (
                     <button
                       onClick={() => handleDelete(ann.id)}
                       className="text-xs text-red-500 hover:text-red-700"

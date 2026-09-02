@@ -3,7 +3,7 @@ import { Code as Code2, GraduationCap, Brain, FileText, TrendingUp, ArrowLeft } 
 import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
-  const { session, profile } = useAuth();
+  const { session, effectiveRole } = useAuth();
 
   const features = [
     { icon: Code2, title: 'תרגול אינטראקטיבי', desc: 'תרגלו תרגילי C# בעורך קוד מקצועי עם בדיקה אוטומטית' },
@@ -30,7 +30,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-4">
               {session ? (
                 <Link
-                  to={profile?.role === 'teacher' ? '/teacher' : '/dashboard'}
+                  to={effectiveRole === 'teacher' ? '/teacher' : '/dashboard'}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-colors"
                 >
                   <span>כניסה ללוח הבקרה</span>

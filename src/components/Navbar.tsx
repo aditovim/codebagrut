@@ -1,10 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, BookOpen, GraduationCap, FileText, Calendar, MessageSquare, Code as Code2 } from 'lucide-react';
+import { LogOut, LayoutDashboard, BookOpen, GraduationCap, FileText, Calendar, MessageSquare, Code as Code2, FlaskConical, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Logo from './Logo';
 
 export default function Navbar() {
-  const { session, profile, signOut } = useAuth();
+  const { session, profile, signOut, effectiveRole, devRoleOverride, setDevRoleOverride } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -26,7 +26,7 @@ export default function Navbar() {
     { to: '/announcements', label: 'עדכונים', icon: MessageSquare },
   ];
 
-  const links = profile?.role === 'teacher' ? teacherLinks : studentLinks;
+  const links = effectiveRole === 'teacher' ? teacherLinks : studentLinks;
 
   return (
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -55,6 +55,28 @@ export default function Navbar() {
               </div>
 
               <div className="flex items-center gap-3">
+                {devRoleOverride && (
+                  <button
+                    onClick={() => setDevRoleOverride(null)}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors"
+                    title="חזרה לתפקיד מקורי"
+                  >
+                    <FlaskConical size={14} />
+                    <span>dev: {devRoleOverride === 'teacher' ? 'מורה' : 'תלמיד'}</span>
+                    <X size={12} />
+                  </button>
+                )}
+                {!devRoleOverride && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setDevRoleOverride(effectiveRole === 'teacher' ? 'student' : 'teacher')}
+                      className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                      title="מצב פיתוח — החלפת תפקיד"
+                    >
+                      <FlaskConical size={14} />
+                    </button>
+                  </div>
+                )}
                 <span className="hidden sm:block text-sm text-slate-500">
                   {profile?.full_name ?? profile?.email}
                 </span>
