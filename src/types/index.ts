@@ -17,6 +17,7 @@ export interface Exercise {
   test_cases: string;
   points: number;
   tags: string[] | null;
+  attachment_url: string | null;
   created_at: string;
 }
 

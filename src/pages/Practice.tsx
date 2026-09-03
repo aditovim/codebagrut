@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Send, Loader as Loader2, CircleCheck as CheckCircle2, Circle as XCircle, Sparkles, Lightbulb, Gauge, ArrowRight, RotateCcw } from 'lucide-react';
+import { Send, Loader as Loader2, CircleCheck as CheckCircle2, Circle as XCircle, Sparkles, Lightbulb, Gauge, ArrowRight, RotateCcw, Paperclip } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { reviewCode, askTutor, RateLimitError } from '@/lib/ai';
@@ -195,6 +195,17 @@ export default function Practice() {
       <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-5">
         <h2 className="text-xl font-bold text-slate-900 mb-3">{selected.title}</h2>
         <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{selected.description}</p>
+        {selected.attachment_url && (
+          <a
+            href={selected.attachment_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors"
+          >
+            <Paperclip size={16} />
+            <span>חומר עזר</span>
+          </a>
+        )}
       </div>
 
       {/* Code editor + AI Tutor — side by side on large screens */}

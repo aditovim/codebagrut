@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { ArrowRight, RotateCcw, Sparkles, Bold, Italic, Underline, Heading2, Code, Link2, Image, List, FileCode, Info, Loader, CircleCheck as CheckCircle2, CircleAlert as AlertCircle } from 'lucide-react';
+import { ArrowRight, RotateCcw, Sparkles, Bold, Italic, Underline, Heading2, Code, Link2, Image, List, FileCode, Info, Loader, CircleCheck as CheckCircle2, CircleAlert as AlertCircle, Paperclip, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { DIFFICULTY_LABELS } from '@/lib/constants';
@@ -34,6 +34,9 @@ export default function ExerciseCreationForm({ onBack, onCreated }: Props) {
   const [starterCode, setStarterCode] = useState('');
   const [solutionCode, setSolutionCode] = useState('');
   const [testCases, setTestCases] = useState('');
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
+  const [attachmentName, setAttachmentName] = useState('');
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +52,8 @@ export default function ExerciseCreationForm({ onBack, onCreated }: Props) {
     setTestCases('');
     setTopics('');
     setDifficulty('beginner');
+    setAttachmentFile(null);
+    setAttachmentName('');
     setError(null);
     setSuccess(false);
     setActiveTab('details');
@@ -63,6 +68,28 @@ export default function ExerciseCreationForm({ onBack, onCreated }: Props) {
 
     setSubmitting(true);
     setError(null);
+
+    // Upload attachment if one was selected
+    let attachmentUrl: string | null = null;
+    if (attachmentFile) {
+      const ext = attachmentFile.name.split('.').pop() ?? 'file';
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      setUploadingFile(true);
+      const { error: uploadError } = await supabase.storage
+        .from('exercise-attachments')
+        .upload(fileName, attachmentFile);
+      setUploadingFile(false);
+
+      if (uploadError) {
+        setSubmitting(false);
+        setError('שגיאה בהעלאת הקובץ: ' + uploadError.message);
+        return;
+      }
+      const { data: urlData } = supabase.storage
+        .from('exercise-attachments')
+        .getPublicUrl(fileName);
+      attachmentUrl = urlData.publicUrl;
+    }
 
     const topicList = topics
       .split(',')
@@ -81,6 +108,7 @@ export default function ExerciseCreationForm({ onBack, onCreated }: Props) {
         test_cases: testCases,
         points: 10,
         tags: topicList,
+        attachment_url: attachmentUrl,
       })
       .select()
       .single();
@@ -157,8 +185,8 @@ export default function ExerciseCreationForm({ onBack, onCreated }: Props) {
               disabled={submitting}
               className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-60"
             >
-              {submitting ? <Loader size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
-              <span>יצירה</span>
+              {submitting || uploadingFile ? <Loader size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+              <span>{uploadingFile ? 'מעלה קובץ...' : submitting ? 'יוצר...' : 'יצירה'}</span>
             </button>
           </div>
         </div>
@@ -366,9 +394,45 @@ export default function ExerciseCreationForm({ onBack, onCreated }: Props) {
                   />
                 )}
 
-                {/* Files tab — code editors */}
+                {/* Files tab — code editors + attachment */}
                 {activeTab === 'files' && (
                   <div className="space-y-4">
+                    {/* Reference file attachment */}
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">חומר עזר מצורף (PDF / תמונה)</label>
+                      <p className="text-xs text-slate-400 mb-2">ניתן לצרף קובץ PDF או תמונה שיהיה זמין לתלמידים בזמן פתרון התרגיל</p>
+                      {attachmentFile ? (
+                        <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                          <Paperclip className="text-blue-600 flex-shrink-0" size={18} />
+                          <span className="text-sm text-slate-700 flex-1 truncate">{attachmentName}</span>
+                          <button
+                            type="button"
+                            onClick={() => { setAttachmentFile(null); setAttachmentName(''); }}
+                            className="text-slate-400 hover:text-red-500 transition-colors"
+                          >
+                            <X size={18} />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-slate-200 hover:border-blue-300 cursor-pointer transition-colors">
+                          <Paperclip className="text-slate-400" size={18} />
+                          <span className="text-sm text-slate-500">לחץ לבחירת קובץ</span>
+                          <input
+                            type="file"
+                            accept=".pdf,.png,.jpg,.jpeg,.gif,.webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) {
+                                setAttachmentFile(f);
+                                setAttachmentName(f.name);
+                              }
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">קוד התחלתי</label>
                       <textarea
