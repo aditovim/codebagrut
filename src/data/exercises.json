@@ -1,0 +1,314 @@
+{
+  "categories": [
+    {
+      "id": "foundations",
+      "name": "יסודות מדעי המחשב",
+      "description": "תרגילי בסיס: מחלקות, עצמים, מערכי עצמים ומערכים חד ממדיים",
+      "exercises": [
+        {
+          "id": "runner-race",
+          "title": "מערך עצמים – תחרות ריצה (Runner & Race)",
+          "difficulty": "easy",
+          "summary": "מחלקת Runner ומחלקת Race שמנהלת מערך של רצים כתכונה פנימית, עם פעולות instance.",
+          "parts": [
+            {
+              "label": "א(1) – תכונות המחלקה Runner",
+              "prompt": "כתבו את כותרת המחלקה Runner ואת שלוש התכונות שלה: name (string), number (int), time (int).",
+              "code": "public class Runner\n{\n    private string name;\n    private int number;\n    private int time;\n}",
+              "explanation": "תכונות מחלקה מוגדרות כמשתנים פרטיים (private) בתוך המחלקה, ונגישות מבחוץ דרך Get/Set."
+            },
+            {
+              "label": "א(2) – פעולה בונה",
+              "prompt": "ממשו פעולה בונה המקבלת שם ומספר. זמן הריצה יאותחל ל-0.",
+              "code": "public Runner(string name, int number)\n{\n    this.name = name;\n    this.number = number;\n    this.time = 0;\n}",
+              "explanation": "פרמטרים שהתקבלו מועברים לתכונות; תכונה שלא התקבלה כפרמטר מאותחלת ידנית לערך ברירת המחדל."
+            },
+            {
+              "label": "א(3) – עדכון זמן",
+              "prompt": "ממשו public void SetTime(int time) שמעדכנת את זמן הריצה.",
+              "code": "public void SetTime(int time)\n{\n    this.time = time;\n}",
+              "explanation": "this.time מציין את תכונת העצם, ואילו time (בלי this) הוא הפרמטר שהתקבל."
+            },
+            {
+              "label": "ב(1) – תכונות המחלקה Race",
+              "prompt": "כתבו את כותרת מחלקת Race עם תכונות name (string), distance (int), runners (מערך Runner בגודל 30).",
+              "code": "public class Race\n{\n    private string name;\n    private int distance;\n    private Runner[] runners;\n}",
+              "explanation": "מערך של עצמים – כל תא יכול להכיל עצם מטיפוס Runner או להיות null."
+            },
+            {
+              "label": "ב(2) – פעולה בונה ל-Race",
+              "prompt": "ממשו בנאי המקבל name ו-distance, ויוצר מערך של 30 רצים.",
+              "code": "public Race(string name, int distance)\n{\n    this.name = name;\n    this.distance = distance;\n    this.runners = new Runner[30];\n}",
+              "explanation": "מיד לאחר new Runner[30], כל תאי המערך הם null אוטומטית."
+            },
+            {
+              "label": "ב(3) – הוספת רץ (AddRunner)",
+              "prompt": "ממשו public bool AddRunner(Runner r) שתוסיף רץ אם אין כפילות מספר ויש מקום פנוי.",
+              "code": "public bool AddRunner(Runner r)\n{\n    int place = -1;\n    for (int i = 0; i < runners.Length; i++)\n    {\n        if (runners[i] != null)\n        {\n            if (runners[i].GetNumber() == r.GetNumber())\n            {\n                return false;\n            }\n        }\n        else\n        {\n            if (place == -1)\n            {\n                place = i;\n            }\n        }\n    }\n    if (place == -1)\n    {\n        return false;\n    }\n    runners[place] = r;\n    return true;\n}",
+              "explanation": "עוברים פעם אחת על המערך: בודקים כפילות מספר ובמקביל שומרים את המקום הפנוי הראשון שנמצא."
+            },
+            {
+              "label": "ב(4) – הסרת רץ (RemoveRunner)",
+              "prompt": "ממשו public bool RemoveRunner(int number) שמסירה רץ לפי מספר.",
+              "code": "public bool RemoveRunner(int number)\n{\n    for (int i = 0; i < runners.Length; i++)\n    {\n        if (runners[i] != null)\n        {\n            if (runners[i].GetNumber() == number)\n            {\n                runners[i] = null;\n                return true;\n            }\n        }\n    }\n    return false;\n}",
+              "explanation": "תמיד בודקים != null לפני קריאה ל-GetNumber(), אחרת תיזרק NullReferenceException."
+            },
+            {
+              "label": "ב(5) – מציאת המנצח (BestRunner)",
+              "prompt": "ממשו public int BestRunner() שמחזירה את מספר הרץ עם זמן הריצה המינימלי (בתיקו – הראשון).",
+              "code": "public int BestRunner()\n{\n    int minTime = int.MaxValue;\n    int bestNumber = -1;\n    for (int i = 0; i < runners.Length; i++)\n    {\n        if (runners[i] != null)\n        {\n            if (runners[i].GetTime() < minTime)\n            {\n                minTime = runners[i].GetTime();\n                bestNumber = runners[i].GetNumber();\n            }\n        }\n    }\n    return bestNumber;\n}",
+              "explanation": "מתחילים ב-int.MaxValue כדי שכל זמן אמיתי יהיה קטן ממנו. שימוש ב-< ולא <= שומר על הראשון בתיקו."
+            },
+            {
+              "label": "ג – פעולה חיצונית CountFast",
+              "prompt": "כתבו public static int CountFast(Race race) שסופרת רצים שסיימו מתחת ל-300 שניות.",
+              "code": "public Runner[] GetRunners()\n{\n    return this.runners;\n}\n\npublic static int CountFast(Race race)\n{\n    int count = 0;\n    Runner[] arr = race.GetRunners();\n    for (int i = 0; i < arr.Length; i++)\n    {\n        if (arr[i] != null)\n        {\n            if (arr[i].GetTime() < 300)\n            {\n                count++;\n            }\n        }\n    }\n    return count;\n}",
+              "explanation": "פעולה חיצונית לא ניגשת ישירות לתכונה הפרטית runners; לכן נדרשת פעולה מאחזרת GetRunners()."
+            },
+            {
+              "label": "ד – חיפוש רץ (FindRunner)",
+              "prompt": "כתבו public static Runner FindRunner(Race race, int number) שמחזירה את העצם (לא רק מספר) או null.",
+              "code": "public static Runner FindRunner(Race race, int number)\n{\n    Runner[] arr = race.GetRunners();\n    for (int i = 0; i < arr.Length; i++)\n    {\n        if (arr[i] != null)\n        {\n            if (arr[i].GetNumber() == number)\n            {\n                return arr[i];\n            }\n        }\n    }\n    return null;\n}",
+              "explanation": "כשמבקשים להחזיר 'את העצם' מחזירים return arr[i]; ולא רק ערך בודד ממנו."
+            }
+          ]
+        },
+        {
+          "id": "bicycle",
+          "title": "מחלקת אופנים Bicycle וניהול מערך ב-Main",
+          "difficulty": "medium",
+          "summary": "מחלקת Bicycle מלאה (בנאים, Get/Set, ToString, Equals) ומערך שמנוהל ישירות ב-Main עם פעולות static.",
+          "parts": [
+            {
+              "label": "חלק א – מחלקת Bicycle",
+              "prompt": "כתבו מחלקה עם תכונות company, gears, type, price; בנאי מלא, בנאי מעתיק, Get/Set, ToString, ו-Equals (חברה+סוג+הילוכים בלבד).",
+              "code": "public class Bicycle\n{\n    private string company;\n    private int gears;\n    private string type;\n    private double price;\n\n    public Bicycle(string company, int gears, string type, double price)\n    {\n        this.company = company;\n        this.gears = gears;\n        this.type = type;\n        this.price = price;\n    }\n\n    public Bicycle(Bicycle other)\n    {\n        this.company = other.company;\n        this.gears = other.gears;\n        this.type = other.type;\n        this.price = other.price;\n    }\n\n    public void SetCompany(string company) { this.company = company; }\n    public void SetGears(int gears) { this.gears = gears; }\n    public void SetType(string type) { this.type = type; }\n    public void SetPrice(double price) { this.price = price; }\n\n    public string GetCompany() { return this.company; }\n    public int GetGears() { return this.gears; }\n    public string GetType() { return this.type; }\n    public double GetPrice() { return this.price; }\n\n    public override string ToString()\n    {\n        return \"Bicycle company: \" + this.company +\n                \" gears: \" + this.gears +\n                \" type: \" + this.type +\n                \" price: \" + this.price;\n    }\n\n    public bool Equals(Bicycle other)\n    {\n        return this.company.Equals(other.company) &&\n            this.gears == other.gears &&\n            this.type.Equals(other.type);\n    }\n}",
+              "explanation": "בנאי מעתיק (copy constructor) יוצר עצם חדש עם אותם ערכים בדיוק כמו עצם קיים. Equals משווה רק את התכונות שהוגדרו בשאלה."
+            },
+            {
+              "label": "חלק ב – BuyBike",
+              "prompt": "public static bool BuyBike(Bicycle[] bikes, Bicycle bcl) – מוסיפה אופניים למקום פנוי אם קיים.",
+              "code": "public static bool BuyBike(Bicycle[] bikes, Bicycle bcl)\n{\n    for (int i = 0; i < bikes.Length; i++)\n    {\n        if (bikes[i] == null)\n        {\n            bikes[i] = new Bicycle(bcl);\n            return true;\n        }\n    }\n    return false;\n}",
+              "explanation": "עוברים על המערך ומחפשים את התא הריק הראשון (null) כדי להכניס בו עותק חדש."
+            },
+            {
+              "label": "חלק ב – SuitableBike",
+              "prompt": "public static void SuitableBike(Bicycle[] bikes, double min, double max) – מדפיסה אופניים בטווח מחירים.",
+              "code": "public static void SuitableBike(Bicycle[] bikes, double min, double max)\n{\n    for (int i = 0; i < bikes.Length; i++)\n    {\n        if (bikes[i] != null)\n        {\n            if (bikes[i].GetPrice() >= min && bikes[i].GetPrice() <= max)\n                Console.WriteLine(bikes[i]);\n        }\n    }\n}",
+              "explanation": "בדיקת טווח כולל קצוות (>= וגם <=), עם בדיקת null מוקדמת."
+            },
+            {
+              "label": "חלק ב – SellBike",
+              "prompt": "public static Bicycle SellBike(Bicycle[] bikes, Bicycle wanted) – מוצאת ומסירה אופניים זהים (מלבד מחיר), מחזירה עותק.",
+              "code": "public static Bicycle SellBike(Bicycle[] bikes, Bicycle wanted)\n{\n    for (int i = 0; i < bikes.Length; i++)\n    {\n        if (bikes[i] != null)\n        {\n            if (bikes[i].Equals(wanted))\n            {\n                Bicycle b = new Bicycle(bikes[i]);\n                bikes[i] = null;\n                return b;\n            }\n        }\n    }\n    return null;\n}",
+              "explanation": "לוקחים עותק לפני איפוס התא ל-null, כדי להחזיר אובייקט תקין למשתמש."
+            }
+          ]
+        },
+        {
+          "id": "pet-boarding-main",
+          "title": "פנסיון לחיות מחמד – מערך ב-Main (Pet)",
+          "difficulty": "medium",
+          "summary": "מחלקת Pet מלאה, ומערך המנוהל ב-Main עם פעולות static: CheckIn, PetsInPriceRange, CheckOut.",
+          "parts": [
+            {
+              "label": "חלק א – מחלקת Pet",
+              "prompt": "כתבו מחלקה עם name, species, age, dailyPrice; בנאי מלא, בנאי מעתיק, Get/Set, ToString, ו-Equals (שם+סוג+גיל).",
+              "code": "public class Pet\n{\n    private string name;\n    private string species;\n    private int age;\n    private double dailyPrice;\n\n    public Pet(string name, string species, int age, double dailyPrice)\n    {\n        this.name = name;\n        this.species = species;\n        this.age = age;\n        this.dailyPrice = dailyPrice;\n    }\n\n    public Pet(Pet other)\n    {\n        this.name = other.name;\n        this.species = other.species;\n        this.age = other.age;\n        this.dailyPrice = other.dailyPrice;\n    }\n\n    public void SetName(string name) { this.name = name; }\n    public void SetSpecies(string species) { this.species = species; }\n    public void SetAge(int age) { this.age = age; }\n    public void SetDailyPrice(double dailyPrice) { this.dailyPrice = dailyPrice; }\n\n    public string GetName() { return this.name; }\n    public string GetSpecies() { return this.species; }\n    public int GetAge() { return this.age; }\n    public double GetDailyPrice() { return this.dailyPrice; }\n\n    public override string ToString()\n    {\n        return \"Pet name: \" + this.name +\n                \" species: \" + this.species +\n                \" age: \" + this.age +\n                \" dailyPrice: \" + this.dailyPrice;\n    }\n\n    public bool Equals(Pet other)\n    {\n        return this.name.Equals(other.name) &&\n            this.species.Equals(other.species) &&\n            this.age == other.age;\n    }\n}",
+              "explanation": "אותו מבנה קלאסי כמו מחלקת Bicycle: בנאי מלא + בנאי מעתיק + Get/Set + ToString + Equals חלקי."
+            },
+            {
+              "label": "חלק ב – CheckIn",
+              "prompt": "public static bool CheckIn(Pet[] pets, Pet p) – קליטת חיה חדשה למקום פנוי במערך.",
+              "code": "public static bool CheckIn(Pet[] pets, Pet p)\n{\n    for (int i = 0; i < pets.Length; i++)\n    {\n        if (pets[i] == null)\n        {\n            pets[i] = new Pet(p);\n            return true;\n        }\n    }\n    return false;\n}",
+              "explanation": "זהה במבנה ל-BuyBike – מחפשים תא ריק ומכניסים עותק של החיה."
+            },
+            {
+              "label": "חלק ב – PetsInPriceRange",
+              "prompt": "public static void PetsInPriceRange(Pet[] pets, double min, double max) – מדפיסה חיות בטווח מחיר יומי.",
+              "code": "public static void PetsInPriceRange(Pet[] pets, double min, double max)\n{\n    for (int i = 0; i < pets.Length; i++)\n    {\n        if (pets[i] != null)\n        {\n            if (pets[i].GetDailyPrice() >= min && pets[i].GetDailyPrice() <= max)\n                Console.WriteLine(pets[i]);\n        }\n    }\n}",
+              "explanation": "אותה טכניקה כמו SuitableBike, על שדה dailyPrice."
+            },
+            {
+              "label": "חלק ב – CheckOut",
+              "prompt": "public static Pet CheckOut(Pet[] pets, Pet wanted) – משחררת חיה זהה (מלבד מחיר) ומחזירה עותק.",
+              "code": "public static Pet CheckOut(Pet[] pets, Pet wanted)\n{\n    for (int i = 0; i < pets.Length; i++)\n    {\n        if (pets[i] != null)\n        {\n            if (pets[i].Equals(wanted))\n            {\n                Pet p = new Pet(pets[i]);\n                pets[i] = null;\n                return p;\n            }\n        }\n    }\n    return null;\n}",
+              "explanation": "זהה במבנה ל-SellBike: עותק לפני איפוס ל-null."
+            }
+          ]
+        },
+        {
+          "id": "pet-pension-instance",
+          "title": "מחלקת Pension – מערך כתכונה עם פעולות instance",
+          "difficulty": "medium",
+          "summary": "אותו נושא (חיות מחמד) בסגנון שונה: המערך הוא תכונה במחלקה Pension, והפעולות הן instance methods.",
+          "parts": [
+            {
+              "label": "א – תכונות המחלקה",
+              "prompt": "כתבו מחלקת Pension עם name, capacity, ומערך pets בגודל capacity.",
+              "code": "public class Pension\n{\n    private string name;\n    private int capacity;\n    private Pet[] pets;\n}",
+              "explanation": "בניגוד לתרגיל הקודם, כאן המערך הוא תכונה בתוך מחלקה ולא מוצהר ב-Main."
+            },
+            {
+              "label": "ב – בנאי",
+              "prompt": "public Pension(string name, int capacity) – יוצר מערך בגודל דינמי לפי capacity.",
+              "code": "public Pension(string name, int capacity)\n{\n    this.name = name;\n    this.capacity = capacity;\n    this.pets = new Pet[capacity];\n}",
+              "explanation": "גודל המערך תלוי בפרמטר שמתקבל בבנאי, ולא קבוע מראש בקוד."
+            },
+            {
+              "label": "ג – AddPet (instance)",
+              "prompt": "public bool AddPet(Pet p) – פעולת instance שניגשת ישירות ל-this.pets, בלי לקבל מערך כפרמטר.",
+              "code": "public bool AddPet(Pet p)\n{\n    int place = -1;\n    for (int i = 0; i < pets.Length; i++)\n    {\n        if (pets[i] != null)\n        {\n            if (pets[i].GetName().Equals(p.GetName()) &&\n                pets[i].GetSpecies().Equals(p.GetSpecies()))\n            {\n                return false;\n            }\n        }\n        else\n        {\n            if (place == -1)\n            {\n                place = i;\n            }\n        }\n    }\n    if (place == -1)\n    {\n        return false;\n    }\n    pets[place] = p;\n    return true;\n}",
+              "explanation": "ההבדל המרכזי מסגנון ה-static: הפעולה ניגשת ל-pets ישירות דרך this, בלי לקבל מערך כפרמטר."
+            },
+            {
+              "label": "ד – RemovePet (instance)",
+              "prompt": "public bool RemovePet(string name) – מסירה חיה לפי שם.",
+              "code": "public bool RemovePet(string name)\n{\n    for (int i = 0; i < pets.Length; i++)\n    {\n        if (pets[i] != null)\n        {\n            if (pets[i].GetName().Equals(name))\n            {\n                pets[i] = null;\n                return true;\n            }\n        }\n    }\n    return false;\n}",
+              "explanation": "אותה טכניקה כמו RemoveRunner, אבל בלי לקבל מערך כפרמטר."
+            },
+            {
+              "label": "ה – OldestPet (instance)",
+              "prompt": "public Pet OldestPet() – מחזירה את העצם של החיה המבוגרת ביותר (בתיקו – הראשונה).",
+              "code": "public Pet OldestPet()\n{\n    int maxAge = -1;\n    Pet oldest = null;\n    for (int i = 0; i < pets.Length; i++)\n    {\n        if (pets[i] != null)\n        {\n            if (pets[i].GetAge() > maxAge)\n            {\n                maxAge = pets[i].GetAge();\n                oldest = pets[i];\n            }\n        }\n    }\n    return oldest;\n}",
+              "explanation": "מחפשים מקסימום: מתחילים ב--1 (גיל תמיד גדול מזה), ושומרים גם את הערך וגם את העצם עצמו."
+            },
+            {
+              "label": "ו – TotalRevenuePerDay (חיצונית)",
+              "prompt": "public static double TotalRevenuePerDay(Pension pension) – סוכמת את dailyPrice של כל החיות.",
+              "code": "public Pet[] GetPets()\n{\n    return this.pets;\n}\n\npublic static double TotalRevenuePerDay(Pension pension)\n{\n    double sum = 0;\n    Pet[] arr = pension.GetPets();\n    for (int i = 0; i < arr.Length; i++)\n    {\n        if (arr[i] != null)\n        {\n            sum += arr[i].GetDailyPrice();\n        }\n    }\n    return sum;\n}",
+              "explanation": "פעולה חיצונית לא יכולה לגשת לתכונה הפרטית pets ישירות – נדרשת פעולה מאחזרת GetPets()."
+            },
+            {
+              "label": "ז – FindPetByName (חיצונית)",
+              "prompt": "public static Pet FindPetByName(Pension pension, string name) – מחפשת חיה לפי שם.",
+              "code": "public static Pet FindPetByName(Pension pension, string name)\n{\n    Pet[] arr = pension.GetPets();\n    for (int i = 0; i < arr.Length; i++)\n    {\n        if (arr[i] != null)\n        {\n            if (arr[i].GetName().Equals(name))\n            {\n                return arr[i];\n            }\n        }\n    }\n    return null;\n}",
+              "explanation": "אותה גישה כמו FindRunner: מחזירים את העצם עצמו, לא רק ערך בודד."
+            }
+          ]
+        },
+        {
+          "id": "array-1d-basic",
+          "title": "מערך חד ממדי – פעולות חישוביות בסיסיות",
+          "difficulty": "easy",
+          "summary": "פעולות סטטיות בסיסיות על מערך int[]: ממוצע, ספירה, מקסימום, היפוך, בדיקת מיון, הסרת כפילויות.",
+          "parts": [
+            {
+              "label": "א – Average",
+              "prompt": "public static double Average(int[] arr) – ממוצע חשבוני; אם ריק מחזירה 0.",
+              "code": "public static double Average(int[] arr)\n{\n    if (arr.Length == 0)\n    {\n        return 0;\n    }\n    int sum = 0;\n    for (int i = 0; i < arr.Length; i++)\n    {\n        sum += arr[i];\n    }\n    return (double)sum / arr.Length;\n}",
+              "explanation": "יש להשתמש ב-(double) cast לפני החלוקה, אחרת תתקבל חלוקה שלמה שגויה."
+            },
+            {
+              "label": "ב – CountAboveAverage",
+              "prompt": "public static int CountAboveAverage(int[] arr) – סופרת איברים גדולים ממש מהממוצע.",
+              "code": "public static int CountAboveAverage(int[] arr)\n{\n    double avg = Average(arr);\n    int count = 0;\n    for (int i = 0; i < arr.Length; i++)\n    {\n        if (arr[i] > avg)\n        {\n            count++;\n        }\n    }\n    return count;\n}",
+              "explanation": "שימוש חוזר בפעולת Average שכבר נכתבה, במקום לחשב שוב."
+            },
+            {
+              "label": "ג – MaxIndex",
+              "prompt": "public static int MaxIndex(int[] arr) – מחזירה את אינדקס הערך המקסימלי (בתיקו – הראשון).",
+              "code": "public static int MaxIndex(int[] arr)\n{\n    int maxIndex = 0;\n    for (int i = 1; i < arr.Length; i++)\n    {\n        if (arr[i] > arr[maxIndex])\n        {\n            maxIndex = i;\n        }\n    }\n    return maxIndex;\n}",
+              "explanation": "מתחילים מהאיבר באינדקס 0 כברירת מחדל, וממשיכים להשוות מאינדקס 1 והלאה."
+            },
+            {
+              "label": "ד – ReverseArray",
+              "prompt": "public static void ReverseArray(int[] arr) – הופכת את המערך במקום (in-place).",
+              "code": "public static void ReverseArray(int[] arr)\n{\n    int start = 0;\n    int end = arr.Length - 1;\n    while (start < end)\n    {\n        int temp = arr[start];\n        arr[start] = arr[end];\n        arr[end] = temp;\n        start++;\n        end--;\n    }\n}",
+              "explanation": "טכניקת שני סמנים (start/end) עם משתנה זמני להחלפה, עד שהסמנים נפגשים."
+            },
+            {
+              "label": "ה – IsSorted",
+              "prompt": "public static bool IsSorted(int[] arr) – בודקת אם המערך ממוין בסדר עולה.",
+              "code": "public static bool IsSorted(int[] arr)\n{\n    for (int i = 0; i < arr.Length - 1; i++)\n    {\n        if (arr[i] > arr[i + 1])\n        {\n            return false;\n        }\n    }\n    return true;\n}",
+              "explanation": "תנאי הלולאה חייב להיות arr.Length - 1 כדי למנוע חריגה מגבולות המערך כשניגשים ל-arr[i+1]."
+            },
+            {
+              "label": "ו – RemoveConsecutiveDuplicates",
+              "prompt": "public static int RemoveConsecutiveDuplicates(int[] arr) – מסירה כפילויות עוקבות, מחזירה אורך אפקטיבי.",
+              "code": "public static int RemoveConsecutiveDuplicates(int[] arr)\n{\n    if (arr.Length == 0)\n    {\n        return 0;\n    }\n    int newLength = 1;\n    for (int i = 1; i < arr.Length; i++)\n    {\n        if (arr[i] != arr[newLength - 1])\n        {\n            arr[newLength] = arr[i];\n            newLength++;\n        }\n    }\n    return newLength;\n}",
+              "explanation": "newLength משמש גם כמונה איברים שנשמרו וגם כאינדקס הכתיבה הבא."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data-structures",
+      "name": "מבנה נתונים",
+      "description": "תרגילים אלגוריתמיים מתקדמים יותר על מערכים חד ממדיים",
+      "exercises": [
+        {
+          "id": "max-subarray-sum",
+          "title": "סכום תת-מערך רציף מקסימלי (Kadane's Algorithm)",
+          "difficulty": "hard",
+          "summary": "מציאת הסכום המקסימלי של תת-מערך רציף, כולל טיפול במספרים שליליים.",
+          "parts": [
+            {
+              "label": "MaxSubArraySum",
+              "prompt": "public static int MaxSubArraySum(int[] arr) – מחזירה את הסכום המקסימלי של תת-מערך רציף (לפחות איבר אחד).",
+              "code": "public static int MaxSubArraySum(int[] arr)\n{\n    int maxSoFar = arr[0];\n    int currentSum = arr[0];\n    for (int i = 1; i < arr.Length; i++)\n    {\n        currentSum = Math.Max(arr[i], currentSum + arr[i]);\n        maxSoFar = Math.Max(maxSoFar, currentSum);\n    }\n    return maxSoFar;\n}",
+              "explanation": "בכל צעד מחליטים: להמשיך את הרצף הקודם (currentSum + arr[i]) או להתחיל רצף חדש (arr[i] בלבד). זהו אלגוריתם דינמי (Kadane)."
+            }
+          ]
+        },
+        {
+          "id": "equilibrium-index",
+          "title": "אינדקס שיווי משקל (Equilibrium Index)",
+          "difficulty": "hard",
+          "summary": "מציאת אינדקס שבו סכום האיברים משמאל שווה לסכום האיברים מימין, בפתרון יעיל O(n).",
+          "parts": [
+            {
+              "label": "EquilibriumIndex",
+              "prompt": "public static int EquilibriumIndex(int[] arr) – מחזירה אינדקס שסכום שמאלו שווה לסכום מימינו (הראשון אם יש כמה, -1 אם אין).",
+              "code": "public static int EquilibriumIndex(int[] arr)\n{\n    int totalSum = 0;\n    for (int i = 0; i < arr.Length; i++)\n        totalSum += arr[i];\n\n    int leftSum = 0;\n    for (int i = 0; i < arr.Length; i++)\n    {\n        int rightSum = totalSum - leftSum - arr[i];\n        if (leftSum == rightSum)\n        {\n            return i;\n        }\n        leftSum += arr[i];\n    }\n    return -1;\n}",
+              "explanation": "מחשבים סכום כולל מראש, ואז 'מגלגלים' leftSum במעבר יחיד — פתרון O(n) במקום O(n²) נאיבי."
+            }
+          ]
+        },
+        {
+          "id": "rotate-array",
+          "title": "סיבוב מערך שמאלה ב-k מקומות (In-Place)",
+          "difficulty": "hard",
+          "summary": "סיבוב מערך שמאלה ללא מערך עזר, באמצעות אלגוריתם שלושת ההיפוכים.",
+          "parts": [
+            {
+              "label": "RotateLeft",
+              "prompt": "public static void RotateLeft(int[] arr, int k) – מסובבת שמאלה ב-k מקומות באותו מערך, בלי מערך עזר.",
+              "code": "public static void RotateLeft(int[] arr, int k)\n{\n    int n = arr.Length;\n    k = k % n;\n\n    Reverse(arr, 0, k - 1);\n    Reverse(arr, k, n - 1);\n    Reverse(arr, 0, n - 1);\n}\n\nprivate static void Reverse(int[] arr, int start, int end)\n{\n    while (start < end)\n    {\n        int temp = arr[start];\n        arr[start] = arr[end];\n        arr[end] = temp;\n        start++;\n        end--;\n    }\n}",
+              "explanation": "'שלושת ההיפוכים': הופכים כל חלק בנפרד, ואז את הכל יחד — תוצאה שקולה לסיבוב, בלי מערך נוסף."
+            }
+          ]
+        },
+        {
+          "id": "two-sum",
+          "title": "שני איברים שסכומם שווה למספר נתון (Two Sum)",
+          "difficulty": "hard",
+          "summary": "בדיקה יעילה (לא O(n²)) האם קיים זוג איברים שסכומם שווה לערך מבוקש.",
+          "parts": [
+            {
+              "label": "HasPairWithSum",
+              "prompt": "public static bool HasPairWithSum(int[] arr, int target) – בודקת קיום זוג אינדקסים שונים שסכומם target, ביעילות.",
+              "code": "public static bool HasPairWithSum(int[] arr, int target)\n{\n    int[] sorted = (int[])arr.Clone();\n    Array.Sort(sorted);\n\n    int left = 0;\n    int right = sorted.Length - 1;\n\n    while (left < right)\n    {\n        int currentSum = sorted[left] + sorted[right];\n        if (currentSum == target)\n        {\n            return true;\n        }\n        else if (currentSum < target)\n        {\n            left++;\n        }\n        else\n        {\n            right--;\n        }\n    }\n    return false;\n}",
+              "explanation": "מיון + שני סמנים (left/right) נותן פתרון O(n log n), במקום לולאה כפולה נאיבית O(n²)."
+            }
+          ]
+        },
+        {
+          "id": "missing-and-duplicate",
+          "title": "המספר החסר והמספר הכפול (Missing & Duplicate)",
+          "difficulty": "hard",
+          "summary": "מציאת מספר כפול ומספר חסר במערך שאמור להכיל 1..n, באמצעות נוסחאות סכום וסכום ריבועים.",
+          "parts": [
+            {
+              "label": "FindMissingAndDuplicate",
+              "prompt": "public static int[] FindMissingAndDuplicate(int[] arr) – מחזירה מערך [כפול, חסר] במערך באורך n שאמור להכיל 1..n.",
+              "code": "public static int[] FindMissingAndDuplicate(int[] arr)\n{\n    int n = arr.Length;\n    long expectedSum = (long)n * (n + 1) / 2;\n    long expectedSumSquares = (long)n * (n + 1) * (2 * n + 1) / 6;\n\n    long actualSum = 0;\n    long actualSumSquares = 0;\n\n    for (int i = 0; i < n; i++)\n    {\n        actualSum += arr[i];\n        actualSumSquares += (long)arr[i] * arr[i];\n    }\n\n    long sumDiff = actualSum - expectedSum;\n    long squareDiff = actualSumSquares - expectedSumSquares;\n\n    long sumTotal = squareDiff / sumDiff;\n    long duplicate = (sumDiff + sumTotal) / 2;\n    long missing = sumTotal - duplicate;\n\n    return new int[] { (int)duplicate, (int)missing };\n}",
+              "explanation": "משתמשים בנוסחאות סכום סדרה חשבונית וסכום ריבועים כדי לפתור מערכת משוואות עם שני נעלמים (הכפול והחסר)."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

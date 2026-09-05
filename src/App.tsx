@@ -13,6 +13,8 @@ import BagrutArchive from '@/pages/BagrutArchive';
 import Announcements from '@/pages/Announcements';
 import Skills from '@/pages/Skills';
 import Exam from '@/pages/Exam';
+import ExerciseLibrary from '@/pages/ExerciseLibrary';
+import ExerciseDetail from '@/pages/ExerciseDetail';
 
 function App() {
   return (
@@ -93,6 +95,30 @@ function App() {
                   <Exam />
                 </Layout>
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/library"
+            element={
+              <Layout>
+                <ExerciseLibrary />
+              </Layout>
+            }
+          />
+          <Route
+            path="/library/:categoryId"
+            element={
+              <Layout>
+                <ExerciseLibrary />
+              </Layout>
+            }
+          />
+          <Route
+            path="/library/:categoryId/:exerciseId"
+            element={
+              <Layout>
+                <ExerciseDetail />
+              </Layout>
             }
           />
         </Routes>

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, BookOpen, GraduationCap, FileText, Calendar, MessageSquare, Code as Code2, FlaskConical, X } from 'lucide-react';
+import { LogOut, LayoutDashboard, BookOpen, GraduationCap, FileText, Calendar, MessageSquare, Code as Code2, FlaskConical, X, Library } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Logo from './Logo';
 
@@ -15,6 +15,7 @@ export default function Navbar() {
   const studentLinks = [
     { to: '/dashboard', label: 'לוח בקרה', icon: LayoutDashboard },
     { to: '/practice', label: 'תרגול', icon: Code2 },
+    { to: '/library', label: 'ספרייה', icon: Library },
     { to: '/exam', label: 'מבחן סימולציה', icon: GraduationCap },
     { to: '/archive', label: 'שאלות בגרות', icon: FileText },
     { to: '/skills', label: 'מיומנויות', icon: BookOpen },
