@@ -85,6 +85,7 @@ export default function ExerciseDetail() {
                     <span className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
                 </div>
+                <div dir="ltr" className="relative z-10">
                 <Editor
                   height={Math.max(120, part.code.split('\n').length * 20) + 'px'}
                   defaultLanguage="csharp"
@@ -101,7 +102,8 @@ export default function ExerciseDetail() {
                     domReadOnly: true,
                   }}
                 />
-              </div>
+                </div>
+                </div>
 
               {/* Explanation */}
               <div className="mt-4 flex items-start gap-2 p-4 rounded-xl bg-amber-50 border border-amber-100">
