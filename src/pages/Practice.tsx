@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Send, Loader as Loader2, CircleCheck as CheckCircle2, Circle as XCircle, Sparkles, Lightbulb, Gauge, ArrowRight, RotateCcw, Paperclip } from 'lucide-react';
+import { Send, Loader as Loader2, CircleCheck as CheckCircle2, Circle as XCircle, Sparkles, Lightbulb, Gauge, ArrowRight, RotateCcw, Paperclip, Search, Filter } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { reviewCode, askTutor, RateLimitError } from '@/lib/ai';
-import { DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/lib/constants';
+import { DIFFICULTY_LABELS, DIFFICULTY_COLORS, TOPICS } from '@/lib/constants';
 import { analyzeComplexity, ComplexityReport } from '@/components/ComplexityAnalyzer';
 import RecursionVisualizer from '@/components/RecursionVisualizer';
 import DataStructuresVisualizer from '@/components/DataStructuresVisualizer';
@@ -23,6 +23,9 @@ export default function Practice() {
   const [tutorLoading, setTutorLoading] = useState(false);
   const [complexity, setComplexity] = useState<ReturnType<typeof analyzeComplexity> | null>(null);
   const [showComplexity, setShowComplexity] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterDifficulty, setFilterDifficulty] = useState('all');
+  const [filterTopic, setFilterTopic] = useState('all');
 
   useEffect(() => {
     (async () => {
@@ -131,6 +134,13 @@ export default function Practice() {
 
   // ===== EXERCISE LIST VIEW =====
   if (!selected) {
+    const filteredExercises = exercises.filter((ex) => {
+      if (searchQuery && !ex.title.includes(searchQuery) && !ex.description.includes(searchQuery)) return false;
+      if (filterDifficulty !== 'all' && ex.difficulty !== filterDifficulty) return false;
+      if (filterTopic !== 'all' && ex.topic !== filterTopic) return false;
+      return true;
+    });
+
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
@@ -138,30 +148,75 @@ export default function Practice() {
           <p className="mt-1 text-slate-600">בחר תרגיל והתחל לכתוב קוד</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {exercises.map((ex) => (
-            <button
-              key={ex.id}
-              onClick={() => openExercise(ex)}
-              className="text-right p-5 rounded-2xl border border-slate-200 bg-white hover:border-blue-300 hover:shadow-md transition-all group"
-            >
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <h3 className="font-bold text-slate-900 text-base group-hover:text-blue-600 transition-colors">{ex.title}</h3>
-                <span className={`px-2 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${DIFFICULTY_COLORS[ex.difficulty]}`}>
-                  {DIFFICULTY_LABELS[ex.difficulty]}
-                </span>
-              </div>
-              <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">{ex.description}</p>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-xs font-medium text-blue-600">{ex.points} נקודות</span>
-                <span className="flex items-center gap-1 text-xs text-slate-400 group-hover:text-blue-600 transition-colors">
-                  התחל תרגול
-                  <ArrowRight size={14} />
-                </span>
-              </div>
-            </button>
-          ))}
+        {/* Filter bar */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 mb-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="חיפוש תרגיל..."
+                className="w-full pr-10 pl-4 py-2.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-sm text-slate-900"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter size={16} className="text-slate-400" />
+              <select
+                value={filterDifficulty}
+                onChange={(e) => setFilterDifficulty(e.target.value)}
+                className="px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 outline-none focus:border-blue-500"
+              >
+                <option value="all">כל הרמות</option>
+                <option value="beginner">קל</option>
+                <option value="intermediate">בינוני</option>
+                <option value="advanced">קשה</option>
+              </select>
+              <select
+                value={filterTopic}
+                onChange={(e) => setFilterTopic(e.target.value)}
+                className="px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 outline-none focus:border-blue-500"
+              >
+                <option value="all">כל הנושאים</option>
+                {TOPICS.map((topic) => (
+                  <option key={topic} value={topic}>{topic}</option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
+
+        {filteredExercises.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center">
+            <p className="text-slate-500">אין תרגילים התואמים את הסינון</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredExercises.map((ex) => (
+              <button
+                key={ex.id}
+                onClick={() => openExercise(ex)}
+                className="text-right p-5 rounded-2xl border border-slate-200/80 bg-white hover:border-blue-300 hover:shadow-md transition-all group"
+              >
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <h3 className="font-bold text-slate-900 text-base group-hover:text-blue-600 transition-colors">{ex.title}</h3>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${DIFFICULTY_COLORS[ex.difficulty]}`}>
+                    {DIFFICULTY_LABELS[ex.difficulty]}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">{ex.description}</p>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-xs font-medium text-blue-600">{ex.points} נקודות</span>
+                  <span className="flex items-center gap-1 text-xs text-slate-400 group-hover:text-blue-600 transition-colors">
+                    התחל תרגול
+                    <ArrowRight size={14} />
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RecursionVisualizer />

@@ -309,7 +309,19 @@ export default function Teacher() {
               </div>
               <div className="divide-y divide-slate-50 max-h-96 overflow-y-auto">
                 {submissions.length === 0 ? (
-                  <div className="px-5 py-10 text-center text-sm text-slate-400">אין הגשות עדיין</div>
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center mb-3">
+                      <BarChart3 className="text-slate-300" size={28} />
+                    </div>
+                    <p className="text-sm text-slate-500 mb-4">אין הגשות עדיין — שתפו מטלה עם הכיתה</p>
+                    <button
+                      onClick={() => setTab('library')}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100 transition-colors"
+                    >
+                      <Send size={16} />
+                      <span>שתף מטלה עם הכיתה</span>
+                    </button>
+                  </div>
                 ) : (
                   submissions.slice(0, 20).map((sub) => {
                     const ex = exercises.find((e) => e.id === sub.exercise_id);

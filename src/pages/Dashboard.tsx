@@ -1,10 +1,38 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Code as Code2, GraduationCap, FileText, TrendingUp, Award, Clock, BookOpen, MessageSquare } from 'lucide-react';
+import { Code as Code2, GraduationCap, FileText, TrendingUp, Award, Clock, BookOpen, MessageSquare, ArrowLeft, Inbox, ClipboardList } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { formatSubmissionDate, getGradeColor } from '@/lib/ai';
 import type { Submission, Assignment, Exercise } from '@/types';
+
+function StatCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-5">
+      <div className="w-10 h-10 rounded-xl bg-slate-100 mb-3 animate-pulse" />
+      <div className="h-7 w-16 bg-slate-100 rounded mb-2 animate-pulse" />
+      <div className="h-4 w-24 bg-slate-100 rounded animate-pulse" />
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, message, actionLabel, actionTo }: { icon: typeof Inbox; message: string; actionLabel: string; actionTo: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-10 text-center">
+      <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center mb-3">
+        <Icon className="text-slate-300" size={28} />
+      </div>
+      <p className="text-sm text-slate-500 mb-4">{message}</p>
+      <Link
+        to={actionTo}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100 transition-colors"
+      >
+        <span>{actionLabel}</span>
+        <ArrowLeft size={16} />
+      </Link>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { profile } = useAuth();
@@ -60,8 +88,21 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-slate-400">טוען...</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <div className="h-8 w-48 bg-slate-100 rounded animate-pulse mb-2" />
+          <div className="h-4 w-32 bg-slate-100 rounded animate-pulse" />
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 h-48 animate-pulse" />
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 h-32 animate-pulse" />
+          </div>
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 h-64 animate-pulse" />
+        </div>
       </div>
     );
   }
@@ -72,14 +113,14 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-slate-900">
             שלום, {profile?.full_name ?? profile?.email}!
           </h1>
-          <p className="mt-1 text-sm text-slate-500">ברוך/ה שוב - הנה סקירה של הפעילות שלך</p>
+          <p className="mt-1 text-sm text-slate-500">ברוך/ה שוב — הנה סקירה של הפעילות שלך</p>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.label} className="bg-white rounded-2xl border border-slate-200 p-5">
+              <div key={stat.label} className="bg-white rounded-2xl border border-slate-200/80 p-5 hover:shadow-md transition-shadow">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${stat.bg} mb-3`}>
                   <Icon className={stat.color} size={20} />
                 </div>
@@ -92,13 +133,18 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="text-blue-600" size={20} />
                 <h2 className="text-lg font-bold text-slate-900">הגשות אחרונות</h2>
               </div>
               {submissions.length === 0 ? (
-                <p className="text-sm text-slate-400 py-8 text-center">עדיין אין הגשות. התחל לתרגל!</p>
+                <EmptyState
+                  icon={Inbox}
+                  message="עדיין אין הגשות. התחילו לתרגל וההגשות יופיעו כאן!"
+                  actionLabel="התחל תרגול"
+                  actionTo="/practice"
+                />
               ) : (
                 <div className="space-y-3">
                   {submissions.map((sub) => {
@@ -119,13 +165,18 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="text-orange-600" size={20} />
                 <h2 className="text-lg font-bold text-slate-900">מטלות</h2>
               </div>
               {assignments.length === 0 ? (
-                <p className="text-sm text-slate-400 py-8 text-center">אין מטלות כרגע</p>
+                <EmptyState
+                  icon={ClipboardList}
+                  message="אין מטלות כרגע. כשהמורה יקצה מטלה היא תופיע כאן."
+                  actionLabel="עבור לתרגול"
+                  actionTo="/practice"
+                />
               ) : (
                 <div className="space-y-3">
                   {assignments.map((assign) => {
@@ -150,7 +201,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6">
             <h2 className="text-lg font-bold text-slate-900 mb-4">פעולות מהירות</h2>
             <div className="space-y-3">
               {quickLinks.map((link) => {
@@ -159,10 +210,10 @@ export default function Dashboard() {
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-all"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-all group"
                   >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-50">
-                      <Icon className="text-slate-600" size={18} />
+                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-50 group-hover:bg-blue-100 transition-colors">
+                      <Icon className="text-slate-600 group-hover:text-blue-600 transition-colors" size={18} />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-slate-800">{link.label}</p>
