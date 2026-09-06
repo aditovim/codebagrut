@@ -267,7 +267,7 @@ export default function Practice() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-5">
         {/* Code editor column */}
         <div className="space-y-4">
-          <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+          <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm pointer-events-auto">
             <div className="bg-slate-800 px-4 py-2 flex items-center justify-between">
               <span className="text-sm text-slate-300 font-medium">עורך הקוד</span>
               <div className="flex items-center gap-1.5">
@@ -284,6 +284,8 @@ export default function Practice() {
               onChange={(val) => setCode(val ?? '')}
               theme="vs-dark"
               options={{
+                readOnly: false,
+                autoFocus: true,
                 fontSize: 14,
                 minimap: { enabled: false },
                 scrollBeyondLastLine: false,
