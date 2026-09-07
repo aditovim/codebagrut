@@ -6,7 +6,7 @@ import { formatSubmissionDate } from '@/lib/ai';
 import type { Announcement } from '@/types';
 
 export default function Announcements() {
-  const { profile, effectiveRole } = useAuth();
+  const { effectiveRole } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);

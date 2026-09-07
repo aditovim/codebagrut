@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, BookOpen, GraduationCap, FileText, Calendar, MessageSquare, Code as Code2, FlaskConical, X, Library } from 'lucide-react';
+import { LogOut, LayoutDashboard, BookOpen, GraduationCap, FileText, MessageSquare, Code as Code2, FlaskConical, X, Library } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Logo from './Logo';
 
@@ -56,7 +56,7 @@ export default function Navbar() {
               </div>
 
               <div className="flex items-center gap-3">
-                {devRoleOverride && (
+                {import.meta.env.DEV && devRoleOverride && (
                   <button
                     onClick={() => setDevRoleOverride(null)}
                     className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors"
@@ -67,7 +67,7 @@ export default function Navbar() {
                     <X size={12} />
                   </button>
                 )}
-                {!devRoleOverride && (
+                {import.meta.env.DEV && !devRoleOverride && (
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => setDevRoleOverride(effectiveRole === 'teacher' ? 'student' : 'teacher')}

@@ -296,7 +296,6 @@ export default function Practice() {
                 }}
                 options={{
                   readOnly: false,
-                  autoFocus: true,
                   fontSize: 14,
                   minimap: { enabled: false },
                   scrollBeyondLastLine: false,

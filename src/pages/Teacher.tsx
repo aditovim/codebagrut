@@ -18,7 +18,7 @@ interface ClassStats {
 type Tab = 'overview' | 'library';
 
 export default function Teacher() {
-  const { user, profile, effectiveRole } = useAuth();
+  const { user, effectiveRole } = useAuth();
   const [tab, setTab] = useState<Tab>('overview');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);

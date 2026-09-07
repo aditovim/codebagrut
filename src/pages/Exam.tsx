@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { reviewCode, RateLimitError } from '@/lib/ai';
 import { DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/lib/constants';
-import type { Exercise, ExamSession, ExamAnswer } from '@/types';
+import type { Exercise, ExamSession } from '@/types';
 
 type Phase = 'setup' | 'exam' | 'results';
 

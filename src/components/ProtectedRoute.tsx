@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children, requireRole }: ProtectedRouteProps) {
-  const { session, profile, loading, effectiveRole } = useAuth();
+  const { session, loading, effectiveRole } = useAuth();
 
   if (loading) return <LoadingScreen />;
   if (!session) return <Navigate to="/login" replace />;
